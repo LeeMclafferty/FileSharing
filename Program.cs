@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using FileSharing.Data;
+
 namespace FileSharing
 {
     public class Program
@@ -8,6 +11,11 @@ namespace FileSharing
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<ApplicationDBContext>(
+                options => options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DefaultConnection"))
+            );
 
             var app = builder.Build();
 
