@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using FileSharing.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace FileSharing
 {
@@ -17,6 +18,10 @@ namespace FileSharing
                 builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDBContext>()
+                .AddDefaultTokenProviders();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -32,6 +37,7 @@ namespace FileSharing
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
