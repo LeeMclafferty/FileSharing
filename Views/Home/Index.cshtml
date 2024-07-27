@@ -3,6 +3,7 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <!-- Generates anchor tag, displays it as a button and routes to registration pagee. -->
+    @Html.ActionLink("Create Account", "Register", "Account", new object{},new{ @class = "btn btn-primary"})
+    @Html.ActionLink("Sign-In", "SignIn", "Account", new object { }, new { @class = "btn btn-primary" })
 </div>
