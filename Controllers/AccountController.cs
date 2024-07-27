@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using NuGet.Versioning;
+using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol;
 
 namespace FileSharing.Controllers
 {
@@ -48,7 +50,19 @@ namespace FileSharing.Controllers
         }
 
         [HttpGet]
-        public IActionResult ResetPassword()
+        public IActionResult ResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+            {
+                return BadRequest();
+            }
+
+            var model = new ResetPasswordViewModel { Token = token, Email = email };
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
         {
             return View();
         }
@@ -97,7 +111,7 @@ namespace FileSharing.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.CanSignInAsync(user);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Upload", "Upload");
                 }
 
                 foreach(var error in result.Errors)
@@ -122,8 +136,7 @@ namespace FileSharing.Controllers
 
                     if (result.Succeeded)
                     {
-                        // later I will replace this with the upload page when I have it.
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Upload", "Upload");
                     }
                     else if (result.IsLockedOut) 
                     {
@@ -163,7 +176,38 @@ namespace FileSharing.Controllers
             string emailHtml = await _renderService.RenderToStringAsync("Account/PasswordResetEmail", resetModel);
             await _emailSender.SendEmailAsync(user.Email, "Password Reset From FileSharing", emailHtml);
             
-            return View("PasswordRequestResetConfirmation");
+            return View("PasswordResetRequestConfirmation");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
     }
 }
