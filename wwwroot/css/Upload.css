@@ -1,0 +1,31 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f7f7f7;
+}
+
+.upload-container {
+    text-align: center;
+}
+
+.drop-area {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    cursor: pointer;
+    background-color: #fafafa;
+}
+
+    .drop-area.dragover {
+        border-color: #000;
+        background-color: #e2eefd;
+    }
+
+#browse-button {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+}

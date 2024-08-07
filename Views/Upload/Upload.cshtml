@@ -1,1 +1,19 @@
-﻿<h2>Upload</h2>
+﻿
+<script src="~/js/Upload.js"></script>
+<link rel="stylesheet" href="~/css/Upload.css">
+
+<h2>Upload</h2>
+
+<body>
+    <div class="upload-container">
+        <form id="upload-form">
+            <input type="file" id="file-input" hidden>
+            <div id="drop-area" class="drop-area">
+                <p>Drag & drop a file here or <span id="browse-button">browse</span></p>
+            </div>
+            <button type="submit">Upload</button>
+        </form>
+        <p id="file-name"></p>
+    </div>
+</body>
+

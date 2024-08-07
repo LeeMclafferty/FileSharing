@@ -60,7 +60,7 @@ namespace FileSharing
             // Dependency Injections
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             builder.Services.AddTransient<IRenderService, ViewRenderService>();
-            builder.Services.AddTransient<IFileUploadService, FileUploadService>();
+            builder.Services.AddTransient<IFileService, FileService>();
 
             var app = builder.Build();
 
