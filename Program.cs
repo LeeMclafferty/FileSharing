@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using FileSharing.Interfaces;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Azure.Identity;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace FileSharing
 {
@@ -17,8 +20,16 @@ namespace FileSharing
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configure Key Vault
+            var vaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
+            if (!string.IsNullOrEmpty(vaultUri))
+            {
+                var azureCredential = new DefaultAzureCredential(includeInteractiveCredentials: true);
+                builder.Configuration.AddAzureKeyVault(new Uri(vaultUri), azureCredential);
+            }
+
             // Use Google OAuth
-            _ = builder.Services.AddAuthentication(options =>
+            builder.Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
@@ -26,8 +37,8 @@ namespace FileSharing
             .AddCookie()
             .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
             {
-                options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
-                options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+                options.ClientId = builder.Configuration["GoogleKeys:ClientId"];
+                options.ClientSecret = builder.Configuration["GoogleKeys:ClientSecret"];
             });
 
             // Add services to the container.
@@ -42,13 +53,14 @@ namespace FileSharing
                 .AddEntityFrameworkStores<ApplicationDBContext>()
                 .AddDefaultTokenProviders();
 
-            // Data tokens like reset password expires after 1 hour. 
+            // Data tokens like reset password expire after 1 hour. 
             builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
-            o.TokenLifespan = TimeSpan.FromHours(1));
+                o.TokenLifespan = TimeSpan.FromHours(1));
 
             // Dependency Injections
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             builder.Services.AddTransient<IRenderService, ViewRenderService>();
+            builder.Services.AddTransient<IFileUploadService, FileUploadService>();
 
             var app = builder.Build();
 
