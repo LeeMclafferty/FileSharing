@@ -11,13 +11,13 @@ namespace FileSharing.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FilesApiController : ControllerBase
+    public class FilesController : ControllerBase
     {
         private readonly IFileService _fileService;
         private readonly long _maxFileSize = 10 * 1024 * 1024; // 10 MB
         private readonly string[] _permittedExtensions = { ".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx", ".xlm", ".txt" };
 
-        public FilesApiController(IFileService fileService)
+        public FilesController(IFileService fileService)
         {
             _fileService = fileService;
         }
@@ -29,15 +29,15 @@ namespace FileSharing.Controllers
             return Ok(result);
         }
 
-        [HttpPost("file")]
+        [HttpPost("upload")]
         public async Task<IActionResult> UploadFile([FromForm] IFormFile file)
         {
-            var result = _fileService.UploadFileAsync(file);
+            var result = await _fileService.UploadFileAsync(file);
             return Ok(result);
         }
 
         [HttpGet]
-        [Route("filename")]
+        [Route("download")]
         public async Task<IActionResult> Download(string filename)
         {
             var result = await _fileService.DownloadAsync(filename);
@@ -45,7 +45,7 @@ namespace FileSharing.Controllers
         }
 
         [HttpDelete]
-        [Route("filename")]
+        [Route("delete")]
         public async Task<IActionResult> Delete(string filename) 
         {
             var result = await _fileService.DeleteAsync(filename);

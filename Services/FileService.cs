@@ -10,23 +10,28 @@ namespace FileSharing.Services
     public class FileService : IFileService
     {
         private readonly string _storageAccount;
-        private readonly string _blobUri;
         private readonly string _blobContainerName;
         private readonly string _encryptionKey;
         private readonly string _encryptionIV;
+        private readonly string _accountKey;
+        private readonly BlobServiceClient _blobServiceClient;
         private readonly BlobContainerClient _filesContainer;
+        
 
         public FileService(IConfiguration configuration)
         {
-            _storageAccount = configuration["AzuerBlobStorage:AccountName"];
-            _blobUri = configuration["AzureBlobStorage:BlobUri"];
+            _storageAccount = configuration["AzureBlobStorage:StorageAccount"];
             _blobContainerName = configuration["AzureBlobStorage:ContainerName"];
             _encryptionKey = configuration["UploadKey"];
             _encryptionIV = configuration["UploadIV"];
+            _accountKey = configuration["AzureBlobStorage:AccountKey"];
 
-            var credential = new StorageSharedKeyCredential(_storageAccount, configuration["AzureBlobStorage:AccountKey"]);
-            var blobServiceClient = new BlobServiceClient(new Uri(_blobUri), credential);
-            _filesContainer = blobServiceClient.GetBlobContainerClient(_blobContainerName);
+            var credential = new StorageSharedKeyCredential(_storageAccount, _accountKey);
+            var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
+            _blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
+            _filesContainer = _blobServiceClient.GetBlobContainerClient(_blobContainerName);
+            Console.WriteLine("test");
+            ListBlobContainersAsync();
         }
 
         public static MemoryStream EncryptStream(Stream inputStream, string key, string iv)
@@ -121,6 +126,17 @@ namespace FileSharing.Services
             }
 
             return new BlobResponseDto { Error = true, Status = $"File: {blobFilName} was not found and could not be deleted." };
+        }
+
+        // for testing connection
+        public async Task ListBlobContainersAsync()
+        {
+            var containers = _blobServiceClient.GetBlobContainersAsync();
+
+            await foreach (var container in containers)
+            {
+                Console.WriteLine(container.Name);
+            }
         }
     }
 }

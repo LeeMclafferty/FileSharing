@@ -57,7 +57,7 @@
         if (file) {
             formData.append('file', file);
 
-            fetch(`/api/uploadapi/file`, { // Ensure this matches your route
+            fetch(`/api/files/upload`, {
                 method: 'POST',
                 body: formData,
             })
