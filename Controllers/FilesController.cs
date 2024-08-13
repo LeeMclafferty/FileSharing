@@ -6,20 +6,29 @@ using System.IO;
 using System.Threading.Tasks;
 using FileSharing.Interfaces;
 using Microsoft.Extensions.Logging;
+using FileSharing.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace FileSharing.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FilesController : ControllerBase
+    public class FilesController : Controller
     {
         private readonly IFileService _fileService;
-        private readonly long _maxFileSize = 10 * 1024 * 1024; // 10 MB
-        private readonly string[] _permittedExtensions = { ".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx", ".xlm", ".txt" };
+        private readonly IConfiguration _config;
 
-        public FilesController(IFileService fileService)
+        public FilesController(IFileService fileService, IConfiguration configuration)
         {
             _fileService = fileService;
+            _config = configuration;
+        }
+
+        [HttpGet]
+        public IActionResult DownloadEmail(DownloadEmailViewModel model)
+        {
+            return View(model);
         }
 
         [HttpGet]
@@ -29,11 +38,19 @@ namespace FileSharing.Controllers
             return Ok(result);
         }
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadFile([FromForm] IFormFile file)
+        [HttpPost]
+        public async Task<IActionResult> UploadFile(DownloadEmailViewModel model)
         {
-            var result = await _fileService.UploadFileAsync(file);
-            return Ok(result);
+            var result = await _fileService.UploadFileAsync(model.File);
+
+            string blobUri = _config["AzureBlobStorage:BlobUri"];
+            string fileName = model.File.FileName;
+            string sasToken = _config["AzureBlobStorage:SasToken"];
+            model.DownloadUri = blobUri + fileName + sasToken;
+
+            await SendDownloadEmail(model);
+            
+            return RedirectToAction("UploadSuccessful", "Upload");
         }
 
         [HttpGet]
@@ -52,23 +69,17 @@ namespace FileSharing.Controllers
             return Ok(result);
         }
 
-
-        private string ValidateFile(IFormFile file)
+        [HttpPost("send")]
+        public async Task<IActionResult> SendDownloadEmail(DownloadEmailViewModel model)
         {
-            // Validate file size
-            if (file.Length > _maxFileSize)
+            if (ModelState.IsValid)
             {
-                return $"File size exceeds {_maxFileSize / (1024 * 1024)} MB limit.";
+                var result = await _fileService.SendDownloadEmailAsync(model);
+                Console.Write(result);
+                return Ok(result);
             }
-
-            // Validate file type
-            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (string.IsNullOrEmpty(ext) || Array.IndexOf(_permittedExtensions, ext) < 0)
-            {
-                return "Invalid file type.";
-            }
-
-            return string.Empty;
+            return BadRequest("Invalid data");
         }
+
     }
 }

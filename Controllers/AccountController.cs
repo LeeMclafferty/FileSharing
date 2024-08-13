@@ -136,7 +136,7 @@ namespace FileSharing.Controllers
 
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Upload", "Upload");
+                        return RedirectToAction("Upload", "Upload", new { userEmail = model.Email});
                     }
                     else if (result.IsLockedOut) 
                     {

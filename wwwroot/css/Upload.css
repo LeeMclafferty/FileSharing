@@ -19,13 +19,18 @@
     background-color: #fafafa;
 }
 
-    .drop-area.dragover {
-        border-color: #000;
-        background-color: #e2eefd;
-    }
+.drop-area.dragover {
+    border-color: #000;
+    background-color: #e2eefd;
+}
 
 #browse-button {
     color: #007bff;
     cursor: pointer;
     text-decoration: underline;
 }
+
+#email-input {
+    padding: 20px;
+}
+

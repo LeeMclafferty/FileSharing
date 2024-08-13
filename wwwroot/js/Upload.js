@@ -3,6 +3,7 @@
     const dropArea = document.getElementById('drop-area');
     const browseButton = document.getElementById('browse-button');
     const fileNameDisplay = document.getElementById('file-name');
+    const uploadForm = document.getElementById('upload-form');
 
     // Handle browse button click
     browseButton.addEventListener('click', () => {
@@ -48,37 +49,71 @@
         fileNameDisplay.textContent = `Selected file: ${file.name}`;
     });
 
-    // Handle form submission
-    const uploadForm = document.getElementById('upload-form');
-    uploadForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData();
+    // BEING HANDLED ON BACK END
+    /*
+    // Make upload call
+    function uploadFile(formData) {
+        return fetch(`/api/files/upload`, {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+            });
+    }
+    
+    function sendDownloadEmail(recipientEmail, downloadUrl) {
+        const emailData = {
+            recipientEmail: recipientEmail,
+            downloadUri: downloadUrl
+        };
+
+        return fetch(`/api/files/send`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailData)
+        });
+    }
+
+    // Handle form submission logic
+    function handleFormSubmit() {
         const file = fileInput.files[0];
-        if (file) {
+        const recipientEmail = document.getElementById('email-input').value;
+
+        if (file && recipientEmail) {
+            const formData = new FormData();
             formData.append('file', file);
 
-            fetch(`/api/files/upload`, {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        return response.text().then(text => { throw new Error(text); });
-                    }
-                })
+            uploadFile(formData)
                 .then(data => {
-                    alert('File uploaded successfully');
-                    fileNameDisplay.textContent = '';
-                    fileInput.value = '';
+                    const downloadUrl = data.downloadUrl;  // Assume the server returns the download URL
+
+                    return sendDownloadEmail(recipientEmail, downloadUrl);
+                })
+                .then(() => {
+                    alert('File uploaded and email sent successfully');
+                    clearForm();
                 })
                 .catch(error => {
-                    console.error('Error uploading file:', error);
-                    alert('Failed to upload file');
+                    console.error('Error:', error);
+                    alert('Failed to upload file or send email');
                 });
         } else {
-            alert('No file selected');
+            alert('No file selected or no email provided');
         }
-    });
+    }
+    */
+
+
+    // Clear form after successful upload
+    function clearForm() {
+        fileNameDisplay.textContent = '';
+        fileInput.value = '';
+    }
 });

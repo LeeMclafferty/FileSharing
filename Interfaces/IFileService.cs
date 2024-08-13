@@ -1,4 +1,5 @@
 ﻿using FileSharing.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FileSharing.Interfaces
 {
@@ -8,5 +9,6 @@ namespace FileSharing.Interfaces
         Task<BlobResponseDto> UploadFileAsync(IFormFile File);
         Task<BlobDto?> DownloadAsync(string blobFileName);
         Task<BlobResponseDto> DeleteAsync(string blobFileName);
+        Task<string> SendDownloadEmailAsync(DownloadEmailViewModel model);
     }
 }

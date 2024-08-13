@@ -1,4 +1,4 @@
-﻿@model PasswordResetEmailViewModel;
+﻿@model DownloadEmailViewModel;
 
 <head>
     <meta charset="UTF-8">
@@ -75,9 +75,8 @@
         </div>
         <div class="content">
             <p>Hello,</p>
-            <p>A request has been received to change the password for your FileSharing account.</p>
-            <a href="@Model.ResetUrl" class="button">Reset Password</a>
-            <p>If you did not initiate this request, please ignore this request and contact support.</p>
+            <p>@Model.SendingEmail has sent you a file to download: @Model.File.FileName</p>
+            <a href="@Model.DownloadUri" class="button">Download</a>
             <p>Thank you,<br>FileSharing Team</p>
         </div>
     </div>

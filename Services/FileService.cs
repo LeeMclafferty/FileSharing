@@ -4,6 +4,11 @@ using System.Security.Cryptography;
 using FileSharing.Interfaces;
 using Azure.Storage;
 using FileSharing.Models;
+using Azure.Core;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Policy;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace FileSharing.Services
 {
@@ -14,11 +19,13 @@ namespace FileSharing.Services
         private readonly string _encryptionKey;
         private readonly string _encryptionIV;
         private readonly string _accountKey;
+        private readonly IEmailSender _emailSender;
         private readonly BlobServiceClient _blobServiceClient;
         private readonly BlobContainerClient _filesContainer;
+        private readonly IRenderService _renderService;
         
 
-        public FileService(IConfiguration configuration)
+        public FileService(IConfiguration configuration, IEmailSender emailSender, IRenderService renderService)
         {
             _storageAccount = configuration["AzureBlobStorage:StorageAccount"];
             _blobContainerName = configuration["AzureBlobStorage:ContainerName"];
@@ -30,8 +37,9 @@ namespace FileSharing.Services
             var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
             _blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
             _filesContainer = _blobServiceClient.GetBlobContainerClient(_blobContainerName);
-            Console.WriteLine("test");
-            ListBlobContainersAsync();
+
+            _emailSender = emailSender;
+            _renderService = renderService;
         }
 
         public static MemoryStream EncryptStream(Stream inputStream, string key, string iv)
@@ -83,7 +91,7 @@ namespace FileSharing.Services
 
             await using (Stream? data = blob.OpenReadStream()) 
             {
-                await client.UploadAsync(data);
+                await client.UploadAsync(data, true);
             }
 
             // Add try catch here to actually catch errors and not set them to false.
@@ -136,6 +144,26 @@ namespace FileSharing.Services
             await foreach (var container in containers)
             {
                 Console.WriteLine(container.Name);
+            }
+        }
+
+        public async Task<string> SendDownloadEmailAsync(DownloadEmailViewModel model)
+        {
+            try
+            {
+                string emailHtml = await _renderService.RenderToStringAsync("Download/DownloadEmail", model);
+                await _emailSender.SendEmailAsync(
+                    model.RecipientEmail,
+                    $"New File Received from {model.SendingEmail}",
+                    emailHtml);
+
+                // Return success response
+                return "Message Sent Successfully";
+            }
+            catch (Exception ex)
+            {
+                // Return error response
+                return $"An error occurred while sending the email: ${ex.Message}";
             }
         }
     }
