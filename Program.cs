@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Azure.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
 
 namespace FileSharing
 {
@@ -34,11 +36,19 @@ namespace FileSharing
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
             })
-            .AddCookie()
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.ExpireTimeSpan = TimeSpan.FromDays(14);
+                options.SlidingExpiration = true;
+            })
             .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
             {
                 options.ClientId = builder.Configuration["GoogleKeys:ClientId"];
                 options.ClientSecret = builder.Configuration["GoogleKeys:ClientSecret"];
+                options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Name, "email");
+                options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Email, "email");
             });
 
             // Add services to the container.

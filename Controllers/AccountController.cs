@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using NuGet.Versioning;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Protocol;
+using System.Security.Claims;
 
 namespace FileSharing.Controllers
 {
@@ -78,25 +79,46 @@ namespace FileSharing.Controllers
         }
 
         [HttpGet]
-        public  async Task<IActionResult> GoogleResponse()
+        public async Task<IActionResult> GoogleResponse()
         {
-            // redirect to login page for Gmail.
-            var result  = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-//             var claims = result.Principal.Identities.First().Claims.Select(claim => new
-//             {
-//                 claim.Issuer,
-//                 claim.OriginalIssuer,
-//                 claim.Type,
-//                 claim.Value
-//             });
+            // Authenticate using the Google scheme
+            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
-            if (result.Failure != null)
+            if (!authenticateResult.Succeeded)
             {
                 return BadRequest();
             }
 
-            return RedirectToAction("Upload", "Upload");
+            // Extract the user's email from the claims
+            var emailClaim = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(emailClaim))
+            {
+                return BadRequest("Email claim not found.");
+            }
 
+            // Check if the user already exists in the local database
+            var user = await _userManager.FindByEmailAsync(emailClaim);
+            if (user == null)
+            {
+                // Create a new local user account with the Google email
+                user = new ApplicationUser
+                {
+                    UserName = emailClaim,
+                    Email = emailClaim
+                };
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    // Handle account creation failure
+                    return BadRequest(createResult.Errors);
+                }
+            }
+
+            // Sign in the user
+            await _signInManager.SignInAsync(user, isPersistent: true);
+
+            // Redirect to the Upload action
+            return RedirectToAction("Upload", "Upload");
         }
 
         /* POST */
@@ -136,7 +158,7 @@ namespace FileSharing.Controllers
 
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Upload", "Upload", new { userEmail = model.Email});
+                        return RedirectToAction("Upload", "Upload");
                     }
                     else if (result.IsLockedOut) 
                     {
@@ -155,6 +177,14 @@ namespace FileSharing.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

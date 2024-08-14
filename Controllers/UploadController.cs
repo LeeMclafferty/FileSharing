@@ -1,6 +1,8 @@
 ﻿using FileSharing.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FileSharing.Controllers
 {
@@ -13,10 +15,9 @@ namespace FileSharing.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Upload(string userEmail)
+        public IActionResult Upload()
         {
-            var user = await _userManager.FindByEmailAsync(userEmail);
-            return View(user);
+            return View();
         }
 
         public IActionResult UploadSuccessful()

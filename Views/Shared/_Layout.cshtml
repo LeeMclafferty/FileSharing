@@ -27,6 +27,34 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Upload" asp-action="Upload">Upload File</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li>
+                                <span class="nav-link text-dark">Hello, @User.Identity.Name!</span>
+                            </li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                    <a type="submit" class="nav-link text-md-end">Log Out</a>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                @Html.ActionLink("Register", "Register", "Account", new { }, new { @class = "nav-link text-dark" })
+                            </li>
+                            <li>
+                                @Html.ActionLink("Sign-In", "SignIn", "Account", new { }, new { @class = "nav-link text-dark" })
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

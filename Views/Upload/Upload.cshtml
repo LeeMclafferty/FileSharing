@@ -1,10 +1,7 @@
-﻿@model ApplicationUser;
-
-<script src="~/js/Upload.js"></script>
+﻿<script src="~/js/Upload.js"></script>
 <link rel="stylesheet" href="~/css/Upload.css">
 
 <h2>Upload</h2>
-<h4>@Model.Email</h4> <!-- Move this into Header banner at some point -->
 
 <body>
     <div class="upload-container">
@@ -18,7 +15,7 @@
 
             <input type="email" name="RecipientEmail" id="recivingEmail-input" placeholder="Enter Recipients Email"> <!-- Recipients's email param -->
 
-            <input type="hidden" name="SendingEmail" id="sendingEmail-input" value="@Model.Email" /> <!-- Sender's email param -->
+            <input type="hidden" name="SendingEmail" id="sendingEmail-input" value="@User.Identity.Name" /> <!-- Sender's email param -->
 
             <button type="submit">Send File</button>
 
