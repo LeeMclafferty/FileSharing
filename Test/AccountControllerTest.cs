@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Security.Claims;
 using Xunit;
@@ -29,13 +30,26 @@ namespace FileSharing.Test
             _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(_mockHttpContext.Object);
 
             _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-                Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
+                Mock.Of<IUserStore<ApplicationUser>>(),
+                Mock.Of<IOptions<IdentityOptions>>(),
+                Mock.Of<IPasswordHasher<ApplicationUser>>(),
+                Array.Empty<IUserValidator<ApplicationUser>>(),
+                Array.Empty<IPasswordValidator<ApplicationUser>>(),
+                Mock.Of<ILookupNormalizer>(),
+                Mock.Of<IdentityErrorDescriber>(),
+                Mock.Of<IServiceProvider>(),
+                Mock.Of<ILogger<UserManager<ApplicationUser>>>()
+            );
 
             _signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
                 _userManagerMock.Object,
                 Mock.Of<IHttpContextAccessor>(),
                 Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(),
-                null, null, null, null);
+                Mock.Of<IOptions<IdentityOptions>>(),
+                Mock.Of<ILogger<SignInManager<ApplicationUser>>>(),
+                Mock.Of<IAuthenticationSchemeProvider>(),
+                Mock.Of<IUserConfirmation<ApplicationUser>>()
+            );
             _emailSender = new Mock<IEmailSender>();
             _renderService = new Mock<IRenderService>();
 

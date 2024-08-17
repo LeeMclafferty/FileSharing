@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 
 public class EmailSender : IEmailSender
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration? _configuration;
 
     public EmailSender(IConfiguration configuration)
     {
