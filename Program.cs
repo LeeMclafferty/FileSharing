@@ -45,8 +45,8 @@ namespace FileSharing
             })
             .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
             {
-                options.ClientId = builder.Configuration["GoogleKeys:ClientId"];
-                options.ClientSecret = builder.Configuration["GoogleKeys:ClientSecret"];
+                options.ClientId = builder.Configuration["GoogleKeys:ClientId"] ?? throw new InvalidOperationException("Google Client ID not valid");
+                options.ClientSecret = builder.Configuration["GoogleKeys:ClientSecret"] ?? throw new InvalidOperationException("Google Client Secret not valid");
                 options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Name, "email");
                 options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Email, "email");
             });

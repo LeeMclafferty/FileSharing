@@ -198,12 +198,16 @@ namespace FileSharing.Controllers
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetUrl = Url.Action("ResetPassword", "Account", new { token = resetToken, email = model.Email }, Request.Scheme);
 
+            if(resetUrl == null)
+            {
+                return BadRequest("Reset URL not valid");
+            }
             PasswordResetEmailViewModel resetModel = new PasswordResetEmailViewModel();
             resetModel.UserName = model.Email;
             resetModel.ResetUrl = resetUrl;
             string emailHtml = await _renderService.RenderToStringAsync("Account/PasswordResetEmail", resetModel);
-            await _emailSender.SendEmailAsync(user.Email, "Password Reset From FileSharing", emailHtml);
-            
+            await _emailSender.SendEmailAsync(user.Email ?? "noemail@invalid.com", "Password Reset From FileSharing", emailHtml);
+
             return View("PasswordResetRequestConfirmation");
         }
 

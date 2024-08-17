@@ -27,7 +27,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Upload" asp-action="Upload">Upload File</a>
@@ -35,7 +35,7 @@
                         }
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li>
                                 <span class="nav-link text-dark">Hello, @User.Identity.Name!</span>

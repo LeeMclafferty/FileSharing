@@ -75,7 +75,7 @@
         </div>
         <div class="content">
             <p>Hello,</p>
-            <p>@Model.SendingEmail has sent you a file to download: @Model.File.FileName</p>
+            <p>@Model.SendingEmail has sent you a file to download: @(Model.File?.FileName ?? "unknown file")</p>
             <a href="@Model.DownloadUri" class="button">Download</a>
             <p>Thank you,<br>FileSharing Team</p>
         </div>

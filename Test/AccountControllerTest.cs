@@ -109,14 +109,14 @@ namespace FileSharing.Test
             var model = new PasswordResetViewModel { Email = "test@example.com" };
 
             // Mock the UserManager's FindByEmailAsync method to return null (user not found)
-            _userManagerMock.Setup(x => x.FindByEmailAsync(model.Email)).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(x => x.FindByEmailAsync(model.Email)).ReturnsAsync((ApplicationUser?)null);
 
             var result = await _controller.RequestPasswordReset(model);
 
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(model, viewResult.Model);
-            Assert.True(_controller.ModelState.ErrorCount > 0); // Check that an error was added to ModelState
-            Assert.Contains(_controller.ModelState, e => e.Value.Errors.Any(error => error.ErrorMessage == "User not found."));
+            Assert.True(_controller.ModelState.ErrorCount > 0);
+            Assert.Contains(_controller.ModelState, e => e.Value?.Errors.Any(error => error.ErrorMessage == "User not found.") == true);
         }
     }
 }

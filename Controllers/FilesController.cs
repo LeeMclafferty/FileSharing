@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using FileSharing.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Castle.Core.Smtp;
 
 namespace FileSharing.Controllers
 {
@@ -17,7 +18,7 @@ namespace FileSharing.Controllers
     public class FilesController : Controller
     {
         private readonly IFileService _fileService;
-        private readonly IConfiguration _config;
+        private readonly IConfiguration? _config;
 
         public FilesController(IFileService fileService, IConfiguration configuration)
         {
@@ -41,15 +42,18 @@ namespace FileSharing.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadFile(DownloadEmailViewModel model)
         {
+            if (model == null || model.File == null || _config == null)
+                return BadRequest();
+
             var result = await _fileService.UploadFileAsync(model.File);
 
-            string blobUri = _config["AzureBlobStorage:BlobUri"];
+            string? blobUri = _config["AzureBlobStorage:BlobUri"];
             string fileName = model.File.FileName;
-            string sasToken = _config["AzureBlobStorage:SasToken"];
+            string? sasToken = _config["AzureBlobStorage:SasToken"];
             model.DownloadUri = blobUri + fileName + sasToken;
 
             await SendDownloadEmail(model);
-            
+
             return RedirectToAction("UploadSuccessful", "Upload");
         }
 
@@ -58,6 +62,10 @@ namespace FileSharing.Controllers
         public async Task<IActionResult> Download(string filename)
         {
             var result = await _fileService.DownloadAsync(filename);
+
+            if (result == null || result.Content == null || result.ContentType == null)    
+                return BadRequest();
+
             return File(result.Content, result.ContentType, result.Name);
         }
 
