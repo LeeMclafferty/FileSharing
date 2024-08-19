@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateProgramFile>false</GenerateProgramFile>
+    <AssemblyName>(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
