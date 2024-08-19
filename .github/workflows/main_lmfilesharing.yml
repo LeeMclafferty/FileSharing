@@ -25,7 +25,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{ github.workspace }}/output
+        run: dotnet publish -c Release -o ${{ github.workspace }}\output
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -47,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-          path: ${{ github.workspace }}/myapp
+          path: ${{ github.workspace }}\myapp
       
       - name: Login to Azure
         uses: azure/login@v2
