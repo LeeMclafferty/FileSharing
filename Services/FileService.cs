@@ -27,11 +27,11 @@ namespace FileSharing.Services
 
         public FileService(IConfiguration configuration, IEmailSender emailSender, IRenderService renderService)
         {
-            _storageAccount = configuration["AzureBlobStorage:StorageAccount"] ?? throw new InvalidOperationException("Storage Account is not configured.");
-            _blobContainerName = configuration["AzureBlobStorage:ContainerName"] ?? throw new InvalidOperationException("Container Name is not configured.");
+            _storageAccount = configuration["AzureBlobStorageAccount"] ?? throw new InvalidOperationException("Storage Account is not configured.");
+            _blobContainerName = configuration["AzureBlobContainerName"] ?? throw new InvalidOperationException("Container Name is not configured.");
             _encryptionKey = configuration["UploadKey"] ?? throw new InvalidOperationException("Upload Key is not configured.");
             _encryptionIV = configuration["UploadIV"] ?? throw new InvalidOperationException("UploadIV is not configured.");
-            _accountKey = configuration["AzureBlobStorage:AccountKey"] ?? throw new InvalidOperationException("Account Key is not configured.");
+            _accountKey = configuration["AzureBlobAccountKey"] ?? throw new InvalidOperationException("Account Key is not configured.");
 
             var credential = new StorageSharedKeyCredential(_storageAccount, _accountKey);
             var blobUri = $"https://{_storageAccount}.blob.core.windows.net";

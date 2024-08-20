@@ -18,16 +18,16 @@ public class EmailSender : IEmailSender
         if (_configuration == null)
             return;
 
-        var smtpClient = new SmtpClient(_configuration["Smtp:Host"])
+        var smtpClient = new SmtpClient(_configuration["SmtpHost"])
         {
-            Port = int.Parse(_configuration["Smtp:Port"] ?? throw new InvalidOperationException("SMTP Port is not configured.")),
-            Credentials = new NetworkCredential(_configuration["Smtp:Username"], _configuration["Smtp:Password"]),
+            Port = int.Parse(_configuration["SmtpPort"] ?? throw new InvalidOperationException("SMTP Port is not configured.")),
+            Credentials = new NetworkCredential(_configuration["SmtpUsername"], _configuration["SmtpPassword"]),
             EnableSsl = true, // Ensure SSL is enabled
         };
 
         var mailMessage = new MailMessage
         {
-            From = new MailAddress(_configuration["Smtp:From"] ?? throw new InvalidOperationException("SMTP From is not configured.")),
+            From = new MailAddress(_configuration["SmtpFrom"] ?? throw new InvalidOperationException("SMTP From is not configured.")),
             Subject = subject,
             Body = htmlMessage,
             IsBodyHtml = true,
