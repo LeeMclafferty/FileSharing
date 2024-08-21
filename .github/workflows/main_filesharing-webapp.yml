@@ -31,6 +31,12 @@ jobs:
       - name: dotnet publish
         run: dotnet publish -c Release -o $GITHUB_WORKSPACE\myapp
 
+      - name: List contents of GITHUB_WORKSPACE
+        run: dir $GITHUB_WORKSPACE
+
+      - name: List contents of GITHUB_WORKSPACE
+        run: dir $GITHUB_WORKSPACE\myapp
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -46,6 +52,12 @@ jobs:
     permissions:
       id-token: write  # This is required for requesting the JWT
 
+      - name: List contents of GITHUB_WORKSPACE
+        run: dir $GITHUB_WORKSPACE
+
+      - name: List contents of GITHUB_WORKSPACE
+        run: dir $GITHUB_WORKSPACE\myapp
+        
     # Needed to specify the path as well here.
     steps:
       - name: Download artifact from build job
