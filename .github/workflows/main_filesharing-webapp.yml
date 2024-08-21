@@ -34,14 +34,14 @@ jobs:
       - name: List contents of GITHUB_WORKSPACE
         run: dir $GITHUB_WORKSPACE
 
-      - name: List contents of GITHUB_WORKSPACE
+      - name: List contents of myapp directory
         run: dir $GITHUB_WORKSPACE\myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: $GITHUB_WORKSPACE
+          path: $GITHUB_WORKSPACE\myapp
 
   deploy:
     runs-on: windows-latest
@@ -52,20 +52,19 @@ jobs:
     permissions:
       id-token: write  # This is required for requesting the JWT
 
-      - name: List contents of GITHUB_WORKSPACE
-        run: dir $GITHUB_WORKSPACE
-
-      - name: List contents of GITHUB_WORKSPACE
-        run: dir $GITHUB_WORKSPACE\myapp
-        
-    # Needed to specify the path as well here.
-    steps:
+    steps:  # The "steps" key was misplaced in your original YAML
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
           path: $GITHUB_WORKSPACE
       
+      - name: List contents of GITHUB_WORKSPACE
+        run: dir $GITHUB_WORKSPACE
+
+      - name: List contents of myapp directory
+        run: dir $GITHUB_WORKSPACE\myapp
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -77,6 +76,4 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'filesharing-webapp'
-          slot-name: 'Production'
-          package: .
+          app-name: 'filesharing
