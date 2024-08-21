@@ -47,9 +47,9 @@ namespace FileSharing.Controllers
 
             var result = await _fileService.UploadFileAsync(model.File);
 
-            string? blobUri = _config["AzureBlobStorage:BlobUri"];
+            string? blobUri = _config["AzureBlobUri"];
             string fileName = model.File.FileName;
-            string? sasToken = _config["AzureBlobStorage:SasToken"];
+            string? sasToken = _config["AzureBlobSasToken"];
             model.DownloadUri = blobUri + fileName + sasToken;
 
             await SendDownloadEmail(model);

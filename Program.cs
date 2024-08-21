@@ -54,9 +54,9 @@ namespace FileSharing
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            string connectionString = builder.Configuration["DefaultConnection"] ?? "";
             builder.Services.AddDbContext<ApplicationDBContext>(
-                options => options.UseSqlServer(
-                builder.Configuration.GetConnectionString("DefaultConnection"))
+                options => options.UseSqlServer(connectionString)
             );
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
