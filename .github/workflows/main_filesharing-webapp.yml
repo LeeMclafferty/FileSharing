@@ -29,7 +29,7 @@ jobs:
 
       # Use $GITHUB_WORKSPACE to explicitly tell the build agent where the csproj is located.
       - name: dotnet publish
-        run: dotnet publish $GITHUB_WORKSPACE\myapp -c Release -o $GITHUB_WORKSPACE\myapp
+        run: dotnet publish $GITHUB_WORKSPACE -c Release -o $GITHUB_WORKSPACE\myapp
 
       - name: List contents of GITHUB_WORKSPACE after publish
         run: dir $GITHUB_WORKSPACE
