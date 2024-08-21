@@ -46,9 +46,11 @@ jobs:
     permissions:
       id-token: write  # This is required for requesting the JWT
 
+    # Needed to specify the path as well here.
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
+        path: $GITHUB_WORKSPACE\myapp
         with:
           name: .net-app
       
