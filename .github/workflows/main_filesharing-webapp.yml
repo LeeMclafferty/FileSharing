@@ -24,15 +24,12 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      - name: Print GITHUB_WORKSPACE value
-        run: echo $GITHUB_WORKSPACE 
-
       - name: List contents of GITHUB_WORKSPACE
         run: dir $GITHUB_WORKSPACE
 
       # Use $GITHUB_WORKSPACE to explicitly tell the build agent where the csproj is located.
       - name: dotnet publish
-        run: dotnet publish "$GITHUB_WORKSPACE\FileSharing.csproj" -c Release -o "C:\Program Files\dotnet\myapp"
+        run: dotnet publish $GITHUB_WORKSPACE/FileSharing.csproj -c Release -o "C:\Program Files\dotnet\myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
