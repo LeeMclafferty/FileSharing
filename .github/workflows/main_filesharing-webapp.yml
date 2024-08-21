@@ -25,10 +25,10 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Print GITHUB_WORKSPACE value
-      run: echo $GITHUB_WORKSPACE
+        run: echo $GITHUB_WORKSPACE 
 
       - name: List contents of GITHUB_WORKSPACE
-      run: dir $GITHUB_WORKSPACE
+        run: dir $GITHUB_WORKSPACE
 
       # Use $GITHUB_WORKSPACE to explicitly tell the build agent where the csproj is located.
       - name: dotnet publish
@@ -47,7 +47,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write  # This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -69,4 +69,3 @@ jobs:
           app-name: 'filesharing-webapp'
           slot-name: 'Production'
           package: .
-          
