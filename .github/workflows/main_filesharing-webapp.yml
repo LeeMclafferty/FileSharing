@@ -51,7 +51,6 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         path: $GITHUB_WORKSPACE\myapp
-        with:
           name: .net-app
       
       - name: Login to Azure
