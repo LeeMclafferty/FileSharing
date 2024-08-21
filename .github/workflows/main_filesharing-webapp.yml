@@ -50,8 +50,9 @@ jobs:
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
-        path: $GITHUB_WORKSPACE\myapp
+        with:
           name: .net-app
+          path: $GITHUB_WORKSPACE\myapp
       
       - name: Login to Azure
         uses: azure/login@v2
