@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: $GITHUB_WORKSPACE\myapp
+          path: D:\myapp
 
   deploy:
     runs-on: windows-latest
