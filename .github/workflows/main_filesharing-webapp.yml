@@ -8,41 +8,30 @@ on:
     branches:
       - main
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-
       - name: Build with dotnet
         run: dotnet build --configuration Release
-
       - name: List contents of GITHUB_WORKSPACE
         run: dir $GITHUB_WORKSPACE
-
-      # Use $GITHUB_WORKSPACE to explicitly tell the build agent where the csproj is located.
       - name: dotnet publish
         run: dotnet publish -c Release -o $GITHUB_WORKSPACE\myapp
-
       - name: List contents of GITHUB_WORKSPACE after publish
         run: dir $GITHUB_WORKSPACE
-
       - name: List contents of myapp directory after publish
         run: dir $GITHUB_WORKSPACE\myapp
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
           path: D:\myapp
-
   deploy:
     runs-on: windows-latest
     needs: build
@@ -50,25 +39,23 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write  # This is required for requesting the JWT
-
+      id-token: write 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A5FE6BB6DEE44803B7E3B22942472A9C }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C5D79C3FAE034788B8E372E72A8E355A }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D4A8DA1FC75D41E69B225683A6D89E09 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_<CLIENTID-key> }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_<TENANTID-key> }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_<SUBSCRIPTIONID-key> }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'filesharing-webapp'
+          app-name: 'kawebapp7'
           slot-name: 'Production'
           package: .
