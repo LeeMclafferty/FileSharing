@@ -31,25 +31,25 @@ namespace FileSharing
             }
 
             // Use Google OAuth
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-            })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-                {
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
-                options.ExpireTimeSpan = TimeSpan.FromDays(14);
-                options.SlidingExpiration = true;
-            })
-            .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-            {
-                options.ClientId = builder.Configuration["GoogleClientId"] ?? throw new InvalidOperationException("Google Client ID not valid");
-                options.ClientSecret = builder.Configuration["GoogleClientSecret"] ?? throw new InvalidOperationException("Google Client Secret not valid");
-                options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Name, "email");
-                options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Email, "email");
-            });
+//             builder.Services.AddAuthentication(options =>
+//             {
+//                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//                 options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+//             })
+//             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+//                 {
+//                 options.LoginPath = "/Account/Login";
+//                 options.LogoutPath = "/Account/Logout";
+//                 options.ExpireTimeSpan = TimeSpan.FromDays(14);
+//                 options.SlidingExpiration = true;
+//             })
+//             .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+//             {
+//                 options.ClientId = builder.Configuration["GoogleClientId"] ?? throw new InvalidOperationException("Google Client ID not valid");
+//                 options.ClientSecret = builder.Configuration["GoogleClientSecret"] ?? throw new InvalidOperationException("Google Client Secret not valid");
+//                 options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Name, "email");
+//                 options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Email, "email");
+//             });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
