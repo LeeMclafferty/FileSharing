@@ -24,24 +24,14 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      - name: List contents of GITHUB_WORKSPACE
-        run: dir $GITHUB_WORKSPACE
-
-      # Use $GITHUB_WORKSPACE to explicitly tell the build agent where the csproj is located.
       - name: dotnet publish
-        run: dotnet publish -c Release -o $GITHUB_WORKSPACE\myapp
-
-      - name: List contents of GITHUB_WORKSPACE after publish
-        run: dir $GITHUB_WORKSPACE
-
-      - name: List contents of myapp directory after publish
-        run: dir $GITHUB_WORKSPACE\myapp
+        run: dotnet publish -c Release -o ${{ github.workspace }}\output
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: D:\myapp
+          path: ${{ github.workspace }}\output
 
   deploy:
     runs-on: windows-latest
@@ -50,26 +40,26 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write  # This is required for requesting the JWT
+      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-          path: D:\myapp
-
+          path: ${{ github.workspace }}\output
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A5FE6BB6DEE44803B7E3B22942472A9C }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C5D79C3FAE034788B8E372E72A8E355A }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D4A8DA1FC75D41E69B225683A6D89E09 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C5C70C93F22746DB8E98BFAD67F0E224 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2118B799E7E44E8095038D96DD3B77C6 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A2AF1AC6A8854FEBB7C9F4B7CDC48C06 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'filesharing-webapp'
+          app-name: 'LMFileSharing'
           slot-name: 'Production'
           package: .
