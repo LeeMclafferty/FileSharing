@@ -132,8 +132,17 @@ namespace FileSharing.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _signInManager.CanSignInAsync(user);
-                    return RedirectToAction("Upload", "Upload");
+                    bool CanSignIn = await _signInManager.CanSignInAsync(user);
+                    if(CanSignIn)
+                    {
+                        SignInViewModel signInViewModel = new SignInViewModel()
+                        {
+                            Email = model.Email,
+                            Password = model.Password
+                        };
+                        await SignIn(signInViewModel);
+                        return RedirectToAction("Upload", "Upload");
+                    }
                 }
 
                 foreach(var error in result.Errors)

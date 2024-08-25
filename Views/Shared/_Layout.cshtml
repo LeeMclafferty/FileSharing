@@ -40,11 +40,9 @@
                             <li>
                                 <span class="nav-link text-dark">Hello, @User.Identity.Name!</span>
                             </li>
-                            <li>
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
-                                    <a type="submit" class="nav-link text-md-end">Log Out</a>
-                                </form>
-                            </li>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                <button type="submit" class="nav-link text-dark btn btn-link" style="padding: 0;">Logout</button>
+                            </form>
                         }
                         else
                         {
